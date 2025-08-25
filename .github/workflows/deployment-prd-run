@@ -1,0 +1,11 @@
+name: Deployment
+
+on:
+  workflow_dispatch:
+jobs:
+  deployment:
+    runs-on: ubuntu-latest
+    environment: prd-run
+    steps:
+      - name: deploy
+        run: echo 'deploy...'

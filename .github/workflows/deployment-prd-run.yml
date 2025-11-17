@@ -57,14 +57,13 @@ jobs:
               (.body | test("(^|\\b)approve(s|d)?(\\b|!|\\.|:)?"; "i"))
             )] | sort_by(.created_at) | reverse | .[0].user.login // empty')
           
-#          if [ -z "$reviewer" ]; then
-#            echo "::error::承認コメントが見つかりませんでした。"
-#            exit 1
-#          fi
+          # if [ -z "$reviewer" ]; then
+          #   echo "::error::承認コメントが見つかりませんでした。"
+          #   exit 1
+          # fi
           
           echo "reviewer=${reviewer}" >> "$GITHUB_OUTPUT"
 
-      # 任意の処理
       - name: Do work
         id: work
         run: |
@@ -74,10 +73,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh issue comment ${{ github.event.issue.number }} \
-            --repo ${{ github.repository }} \
-            --body "処理を受け付けました。
+          cat << 'EOF' | gh issue comment ${{ github.event.issue.number }} --repo ${{ github.repository }} --body-file -
+          処理を受け付けました。
           - 作成者: @${{ steps.who.outputs.issue_author }}
           - レビュアー: @${{ steps.who.outputs.reviewer }}
           - 実行者: @${{ steps.who.outputs.executor }}
-          - 結果: **${{ steps.work.outputs.result }}**"
+          - 結果: **${{ steps.work.outputs.result }}**
+          EOF
